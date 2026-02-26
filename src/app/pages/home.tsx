@@ -11,7 +11,7 @@ import { useStudentName } from '../components/student-name-context';
 import { useBadges } from '../components/badge-context';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { SunRays } from '../components/sun-rays';
-import bannerImg from "../../assets/banner.svg";
+import bannerImg from "../../assets/f396404c67b48427bf09a9ea03a46e187ea6612b.png";
 
 // Pre-compute particle data for flame taps
 function generateFlameInside() {
