@@ -234,7 +234,7 @@ function MobilePulseRays() {
           position: absolute;
           inset: -25%;
           transform: rotate(-10deg);
-          transform-origin: 78% 20%;
+          transform-origin: 62% 14%;
           will-change: opacity;
           opacity: 0;
           animation: sunraysPulse 7s ease-in-out infinite;
@@ -249,13 +249,13 @@ function MobilePulseRays() {
           style={{
             // A subtle glow + distinct ray spokes
             background: [
-              "radial-gradient(60% 45% at 78% 20%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
-              "radial-gradient(60% 45% at 78% 20%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
-              "repeating-conic-gradient(from 210deg at 78% 20%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.16) 8deg, rgba(0,210,211,0.00) 18deg)"
+              "radial-gradient(60% 45% at 62% 14%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
+              "radial-gradient(60% 45% at 62% 14%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
+              "repeating-conic-gradient(from 210deg at 62% 14%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.16) 8deg, rgba(0,210,211,0.00) 18deg)"
             ].join(","),
             // Mask rays so they fade out as they travel
-            WebkitMaskImage: "radial-gradient(65% 55% at 78% 20%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
-            maskImage: "radial-gradient(65% 55% at 78% 20%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
+            WebkitMaskImage: "radial-gradient(65% 55% at 62% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
+            maskImage: "radial-gradient(65% 55% at 62% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
           }}
         />
       </div>
