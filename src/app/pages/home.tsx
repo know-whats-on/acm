@@ -99,6 +99,16 @@ export function HomePage() {
   const [pageTurns, setPageTurns] = React.useState<number[]>([]);
   const tapIdRef = React.useRef(0);
 
+  // PERF: Mobile devices struggle with particle/overlay animations.
+  // Desktop stays animated; mobile defaults to reduced effects.
+  const prefersReducedMotion = (() => {
+    try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; }
+  })();
+  const isMobile = (() => {
+    try { return window.matchMedia && window.matchMedia("(max-width: 768px)").matches; } catch { return false; }
+  })();
+  const allowFunAnimations = !prefersReducedMotion && !isMobile;
+
   // Calculate active weeks from course start date
   const activeWeeks = (() => {
     try {
@@ -120,16 +130,15 @@ export function HomePage() {
   return (
     <div className="min-h-screen relative">
       {/* XP tap page-darkening overlay */}
-      {xpTaps.length > 0 && (
+      {allowFunAnimations && xpTaps.length > 0 && (
         <div className="fixed inset-0 pointer-events-none xp-page-darken" style={{ zIndex: 40 }} />
       )}
       {/* Camera screen flash overlays - full screen */}
-      {cameraFlashes.map(fid => (
+      {allowFunAnimations ? cameraFlashes.map(fid => (
         <div key={fid} className="fixed inset-0 pointer-events-none camera-screen-flash" style={{ zIndex: 9999 }} />
-      ))}
+      )) : null}
       {/* Spotlight sunrays - page-level so origin scrolls with content */}
-      <SunRays />
-
+      {allowFunAnimations ? <SunRays /> : null}
       {/* Hero Banner */}
       <div className="relative h-56 overflow-hidden" style={{ zIndex: 0 }}>
         <ImageWithFallback
