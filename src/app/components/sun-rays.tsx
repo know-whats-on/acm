@@ -219,9 +219,9 @@ function MobilePulseRays() {
       <style>{`
         @keyframes sunraysPulse {
           0%   { opacity: 0; }
-          12%  { opacity: 0.70; }
-          35%  { opacity: 0.22; }
-          70%  { opacity: 0.10; }
+          10%  { opacity: 0.85; }
+          30%  { opacity: 0.35; }
+          65%  { opacity: 0.16; }
           100% { opacity: 0; }
         }
         .sunraysPulseWrap {
@@ -229,31 +229,40 @@ function MobilePulseRays() {
           inset: 0;
           pointer-events: none;
           z-index: 1;
-          mix-blend-mode: screen;
         }
         .sunraysPulseLayer {
           position: absolute;
-          inset: -20%;
-          transform: rotate(-8deg);
-          transform-origin: 70% 25%;
+          inset: -25%;
+          transform: rotate(-10deg);
+          transform-origin: 78% 20%;
           will-change: opacity;
+          opacity: 0;
           animation: sunraysPulse 7s ease-in-out infinite;
+          mix-blend-mode: screen;
+          filter: blur(0.6px);
         }
       `}</style>
+
       <div className="sunraysPulseWrap" aria-hidden="true">
         <div
           className="sunraysPulseLayer"
           style={{
+            // A subtle glow + distinct ray spokes
             background: [
-              "radial-gradient(60% 45% at 75% 20%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 70%)",
-              "conic-gradient(from 210deg at 75% 20%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.14) 22deg, rgba(0,210,211,0.00) 48deg, rgba(0,210,211,0.10) 78deg, rgba(0,210,211,0.00) 110deg, rgba(0,210,211,0.08) 150deg, rgba(0,210,211,0.00) 180deg, rgba(0,210,211,0.10) 220deg, rgba(0,210,211,0.00) 270deg, rgba(0,210,211,0.08) 320deg, rgba(0,210,211,0.00) 360deg)"
-            ].join(",")
+              "radial-gradient(60% 45% at 78% 20%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
+              "radial-gradient(60% 45% at 78% 20%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
+              "repeating-conic-gradient(from 210deg at 78% 20%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.16) 8deg, rgba(0,210,211,0.00) 18deg)"
+            ].join(","),
+            // Mask rays so they fade out as they travel
+            WebkitMaskImage: "radial-gradient(65% 55% at 78% 20%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
+            maskImage: "radial-gradient(65% 55% at 78% 20%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
           }}
         />
       </div>
     </>
   );
 }
+
 
 /* ── Public component: chooses based on device + reduced motion ── */
 export function SunRays() {
