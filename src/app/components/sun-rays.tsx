@@ -217,12 +217,10 @@ function MobilePulseRays() {
   return (
     <>
       <style>{`
-        @keyframes sunraysPulse {
-          0%   { opacity: 0; }
-          10%  { opacity: 0.85; }
-          30%  { opacity: 0.35; }
-          65%  { opacity: 0.16; }
-          100% { opacity: 0; }
+        @keyframes sunraysSwing {
+          0%   { transform: rotate(30deg); }
+          50%  { transform: rotate(-60deg); }
+          100% { transform: rotate(30deg); }
         }
         .sunraysPulseWrap {
           position: absolute;
@@ -235,9 +233,9 @@ function MobilePulseRays() {
           inset: -25%;
           transform: rotate(-10deg);
           transform-origin: 14% 14%;
-          will-change: opacity;
-          opacity: 0;
-          animation: sunraysPulse 7s ease-in-out infinite;
+          will-change: transform;
+          opacity: 0.55;
+          animation: sunraysSwing 18s ease-in-out infinite;
           mix-blend-mode: screen;
           filter: none;
         }
