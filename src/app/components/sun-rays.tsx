@@ -227,15 +227,16 @@ function MobilePulseRays() {
           inset: 0;
           pointer-events: none;
           z-index: 1;
+          overflow: hidden;
         }
         .sunraysPulseLayer {
           position: absolute;
-          inset: -25%;
-          transform: rotate(-10deg);
-          transform-origin: 14% 14%;
+          /* Big enough that rotating never reveals a rectangle edge */
+          inset: -90%;
+          transform-origin: var(--ray-origin-x) var(--ray-origin-y);
           will-change: transform;
-          opacity: 0.55;
-          animation: sunraysSwing 18s ease-in-out infinite;
+          opacity: 0.72;
+          animation: sunraysSwing 22s ease-in-out infinite;
           mix-blend-mode: screen;
           filter: none;
         }
@@ -245,16 +246,23 @@ function MobilePulseRays() {
         <div
           className="sunraysPulseLayer"
           style={{
-            // A subtle glow + distinct ray spokes
+            // Origin (we will shift X by +16% in Step 2)
+            ["--ray-origin-x" as any]: "62%",
+            ["--ray-origin-y" as any]: "14%",
+
+            // 360° spokes, thin + high contrast (teal + white)
             background: [
-              "radial-gradient(60% 45% at 14% 14%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
-              "radial-gradient(60% 45% at 14% 14%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
-              "repeating-conic-gradient(from 210deg at 14% 14%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.42) 12deg, rgba(0,210,211,0.00) 28deg)",
-              "repeating-conic-gradient(from 210deg at 14% 14%, rgba(255,255,255,0.00) 0deg, rgba(255,255,255,0.26) 10deg, rgba(255,255,255,0.00) 26deg)"
+              "radial-gradient(60% 45% at 62% 14%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 72%)",
+              "radial-gradient(60% 45% at 62% 14%, rgba(0,210,211,0.22) 0%, rgba(0,210,211,0) 75%)",
+              "repeating-conic-gradient(from 0deg at 62% 14%, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.18) 3deg, rgba(255,255,255,0) 10deg)",
+              "repeating-conic-gradient(from 0deg at 62% 14%, rgba(0,210,211,0) 0deg, rgba(0,210,211,0.26) 2deg, rgba(0,210,211,0) 9deg)"
             ].join(","),
-            // Mask rays so they fade out as they travel
-            WebkitMaskImage: "radial-gradient(65% 55% at 14% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
-            maskImage: "radial-gradient(65% 55% at 14% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
+
+            // Feathered mask: removes any hard boundary so no “rectangle line”
+            WebkitMaskImage:
+              "radial-gradient(75% 65% at 62% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0) 86%)",
+            maskImage:
+              "radial-gradient(75% 65% at 62% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0) 86%)"
           }}
         />
       </div>
@@ -276,7 +284,7 @@ export function SunRays() {
           zIndex: 1,
           opacity: 0.16,
           mixBlendMode: 'screen',
-          background: "radial-gradient(60% 45% at 75% 20%, rgba(0,210,211,0.22) 0%, rgba(0,210,211,0) 70%)",
+          background: "radial-gradient(60% 45% at 91% 20%, rgba(0,210,211,0.22) 0%, rgba(0,210,211,0) 70%)",
         }}
         aria-hidden="true"
       />
