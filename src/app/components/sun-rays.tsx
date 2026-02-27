@@ -234,7 +234,7 @@ function MobilePulseRays() {
           position: absolute;
           inset: -25%;
           transform: rotate(-10deg);
-          transform-origin: 46% 14%;
+          transform-origin: 14% 14%;
           will-change: opacity;
           opacity: 0;
           animation: sunraysPulse 7s ease-in-out infinite;
@@ -249,14 +249,14 @@ function MobilePulseRays() {
           style={{
             // A subtle glow + distinct ray spokes
             background: [
-              "radial-gradient(60% 45% at 46% 14%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
-              "radial-gradient(60% 45% at 46% 14%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
-              "repeating-conic-gradient(from 210deg at 46% 14%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.42) 12deg, rgba(0,210,211,0.00) 28deg)",
-              "repeating-conic-gradient(from 210deg at 46% 14%, rgba(255,255,255,0.00) 0deg, rgba(255,255,255,0.26) 10deg, rgba(255,255,255,0.00) 26deg)"
+              "radial-gradient(60% 45% at 14% 14%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.00) 70%)",
+              "radial-gradient(60% 45% at 14% 14%, rgba(0,210,211,0.28) 0%, rgba(0,210,211,0.00) 72%)",
+              "repeating-conic-gradient(from 210deg at 14% 14%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.42) 12deg, rgba(0,210,211,0.00) 28deg)",
+              "repeating-conic-gradient(from 210deg at 14% 14%, rgba(255,255,255,0.00) 0deg, rgba(255,255,255,0.26) 10deg, rgba(255,255,255,0.00) 26deg)"
             ].join(","),
             // Mask rays so they fade out as they travel
-            WebkitMaskImage: "radial-gradient(65% 55% at 46% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
-            maskImage: "radial-gradient(65% 55% at 46% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
+            WebkitMaskImage: "radial-gradient(65% 55% at 14% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)",
+            maskImage: "radial-gradient(65% 55% at 14% 14%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 72%)"
           }}
         />
       </div>
