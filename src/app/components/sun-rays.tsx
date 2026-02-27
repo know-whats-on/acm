@@ -1,22 +1,58 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-/* ── Ray data ── */
+/* ─────────────────────────────────────────────────────────────
+   Desktop: your original animated rays (swing + scatter tap)
+   Mobile: pulse-only overlay (bright → fade out → repeat), no movement
+   Also respects prefers-reduced-motion (static subtle glow)
+───────────────────────────────────────────────────────────── */
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    try {
+      const m = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const onChange = () => setReduced(!!m.matches);
+      onChange();
+      m.addEventListener?.('change', onChange);
+      return () => m.removeEventListener?.('change', onChange);
+    } catch {
+      setReduced(false);
+    }
+  }, []);
+  return reduced;
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    try {
+      const m = window.matchMedia('(max-width: 768px)');
+      const onChange = () => setIsMobile(!!m.matches);
+      onChange();
+      m.addEventListener?.('change', onChange);
+      return () => m.removeEventListener?.('change', onChange);
+    } catch {
+      setIsMobile(false);
+    }
+  }, []);
+  return isMobile;
+}
+
+/* ── Ray data (desktop) ── */
 interface RayDef {
   endX: number;
   endY: number;
   spread: number;
   gradId: string;
   opacity: number;
-  // Per-ray swing parameters (degrees)
   swingA: number;
   swingB: number;
   swingC: number;
-  swingDur: number;   // seconds
-  breathDur: number;  // seconds
-  enterDelay: number; // seconds
-  // Scatter parameters
-  scatterRot: number; // degrees
-  scatterY: number;   // px
+  swingDur: number;
+  breathDur: number;
+  enterDelay: number;
+  scatterRot: number;
+  scatterY: number;
 }
 
 const ORIGIN_X = 80;
@@ -37,7 +73,6 @@ function makeRays(): RayDef[] {
   ];
 
   return base.map((r, i) => {
-    // Each ray gets unique gentle swing range (±1.5° to ±4°)
     const swingRange = 1.5 + Math.random() * 2.5;
     const swingOffset = (Math.random() - 0.5) * 1.5;
     return {
@@ -45,41 +80,36 @@ function makeRays(): RayDef[] {
       swingA: swingOffset - swingRange,
       swingB: swingOffset,
       swingC: swingOffset + swingRange,
-      swingDur: 5 + Math.random() * 5,      // 5-10s per full swing cycle
-      breathDur: 4 + Math.random() * 4,      // 4-8s opacity breathing
-      enterDelay: 1.5 + i * 0.12 + Math.random() * 0.3, // staggered after 1.5s base delay
-      scatterRot: (Math.random() - 0.5) * 30 + (i % 2 === 0 ? -8 : 8), // scatter rotation
-      scatterY: 20 + Math.random() * 40,     // scatter translation
+      swingDur: 5 + Math.random() * 5,
+      breathDur: 4 + Math.random() * 4,
+      enterDelay: 1.5 + i * 0.12 + Math.random() * 0.3,
+      scatterRot: (Math.random() - 0.5) * 30 + (i % 2 === 0 ? -8 : 8),
+      scatterY: 20 + Math.random() * 40,
     };
   });
 }
 
-// Stable ray definitions (computed once)
 const RAYS = makeRays();
 
 type Phase = 'hidden' | 'entering' | 'swinging' | 'scattered' | 'reforming';
 
-export function SunRays() {
+function DesktopSunRays() {
   const [phase, setPhase] = useState<Phase>('hidden');
   const scatterTimeout = useRef<ReturnType<typeof setTimeout>>();
   const reformTimeout = useRef<ReturnType<typeof setTimeout>>();
 
-  // Start entrance after 1.5s delay
   useEffect(() => {
     const t = setTimeout(() => setPhase('entering'), 100);
     return () => clearTimeout(t);
   }, []);
 
-  // After entrance animation completes, switch to swinging
   useEffect(() => {
     if (phase === 'entering') {
-      // The longest entrance is ~1.5s base + 10 rays * 0.12 stagger + 1.2s anim ≈ 4s
       const t = setTimeout(() => setPhase('swinging'), 3200);
       return () => clearTimeout(t);
     }
   }, [phase]);
 
-  // After reforming completes, go back to swinging
   useEffect(() => {
     if (phase === 'reforming') {
       const t = setTimeout(() => setPhase('swinging'), 1500);
@@ -92,11 +122,9 @@ export function SunRays() {
     if (navigator.vibrate) navigator.vibrate(15);
     setPhase('scattered');
 
-    // Clear any pending timeouts
     if (scatterTimeout.current) clearTimeout(scatterTimeout.current);
     if (reformTimeout.current) clearTimeout(reformTimeout.current);
 
-    // After scatter animation, reform
     scatterTimeout.current = setTimeout(() => {
       setPhase('reforming');
     }, 1200);
@@ -148,26 +176,25 @@ export function SunRays() {
             style.opacity = 0;
             style.animation = `sunray-enter 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) ${ray.enterDelay}s forwards`;
           } else if (phase === 'swinging') {
-            // Continuous gentle swing + breathing
             style.opacity = 1;
             style.animation = [
               `sunray-swing ${ray.swingDur}s ease-in-out infinite`,
               `sunray-breathe ${ray.breathDur}s ease-in-out infinite`,
             ].join(', ');
-            style['--ray-swing-a' as string] = `${ray.swingA}deg`;
-            style['--ray-swing-b' as string] = `${ray.swingB}deg`;
-            style['--ray-swing-c' as string] = `${ray.swingC}deg`;
-            style['--ray-opa-lo' as string] = `${0.55 + ray.opacity}`;
-            style['--ray-opa-hi' as string] = `${0.85 + ray.opacity * 0.5}`;
+            (style as any)['--ray-swing-a'] = `${ray.swingA}deg`;
+            (style as any)['--ray-swing-b'] = `${ray.swingB}deg`;
+            (style as any)['--ray-swing-c'] = `${ray.swingC}deg`;
+            (style as any)['--ray-opa-lo'] = `${0.55 + ray.opacity}`;
+            (style as any)['--ray-opa-hi'] = `${0.85 + ray.opacity * 0.5}`;
           } else if (phase === 'scattered') {
             style.animation = `sunray-scatter 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
-            style['--ray-swing-a' as string] = `${ray.swingA}deg`;
-            style['--ray-scatter-rot' as string] = `${ray.scatterRot}deg`;
-            style['--ray-scatter-y' as string] = `${ray.scatterY}px`;
+            (style as any)['--ray-swing-a'] = `${ray.swingA}deg`;
+            (style as any)['--ray-scatter-rot'] = `${ray.scatterRot}deg`;
+            (style as any)['--ray-scatter-y'] = `${ray.scatterY}px`;
           } else if (phase === 'reforming') {
             style.opacity = 0;
             style.animation = `sunray-reform 1.3s cubic-bezier(0.22, 0.61, 0.36, 1) ${i * 0.08}s forwards`;
-            style['--ray-swing-a' as string] = `${ray.swingA}deg`;
+            (style as any)['--ray-swing-a'] = `${ray.swingA}deg`;
           }
 
           return (
@@ -183,4 +210,70 @@ export function SunRays() {
       </svg>
     </div>
   );
+}
+
+/* ── Mobile pulse overlay (no movement) ── */
+function MobilePulseRays() {
+  return (
+    <>
+      <style>{`
+        @keyframes sunraysPulse {
+          0%   { opacity: 0; }
+          12%  { opacity: 0.70; }
+          35%  { opacity: 0.22; }
+          70%  { opacity: 0.10; }
+          100% { opacity: 0; }
+        }
+        .sunraysPulseWrap {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1;
+          mix-blend-mode: screen;
+        }
+        .sunraysPulseLayer {
+          position: absolute;
+          inset: -20%;
+          transform: rotate(-8deg);
+          transform-origin: 70% 25%;
+          will-change: opacity;
+          animation: sunraysPulse 7s ease-in-out infinite;
+        }
+      `}</style>
+      <div className="sunraysPulseWrap" aria-hidden="true">
+        <div
+          className="sunraysPulseLayer"
+          style={{
+            background: [
+              "radial-gradient(60% 45% at 75% 20%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 70%)",
+              "conic-gradient(from 210deg at 75% 20%, rgba(0,210,211,0.00) 0deg, rgba(0,210,211,0.14) 22deg, rgba(0,210,211,0.00) 48deg, rgba(0,210,211,0.10) 78deg, rgba(0,210,211,0.00) 110deg, rgba(0,210,211,0.08) 150deg, rgba(0,210,211,0.00) 180deg, rgba(0,210,211,0.10) 220deg, rgba(0,210,211,0.00) 270deg, rgba(0,210,211,0.08) 320deg, rgba(0,210,211,0.00) 360deg)"
+            ].join(",")
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+/* ── Public component: chooses based on device + reduced motion ── */
+export function SunRays() {
+  const reduced = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+
+  if (reduced) {
+    return (
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          zIndex: 1,
+          opacity: 0.16,
+          mixBlendMode: 'screen',
+          background: "radial-gradient(60% 45% at 75% 20%, rgba(0,210,211,0.22) 0%, rgba(0,210,211,0) 70%)",
+        }}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  return isMobile ? <MobilePulseRays /> : <DesktopSunRays />;
 }
