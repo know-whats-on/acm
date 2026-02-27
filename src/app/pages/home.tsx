@@ -138,7 +138,7 @@ export function HomePage() {
         <div key={fid} className="fixed inset-0 pointer-events-none camera-screen-flash" style={{ zIndex: 9999 }} />
       )) : null}
       {/* Spotlight sunrays - page-level so origin scrolls with content */}
-      {allowFunAnimations ? <SunRays /> : null}
+      <SunRays />
       {/* Hero Banner */}
       <div className="relative h-56 overflow-hidden" style={{ zIndex: 0 }}>
         <ImageWithFallback
